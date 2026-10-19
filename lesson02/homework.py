@@ -11,8 +11,17 @@ def fizzbuzz(n: int) -> list[str]:
     fizzbuzz(5) -> ["1", "2", "Fizz", "4", "Buzz"]
     提示：range(1, n + 1)、str(i)、list.append
     """
-    # TODO
-    raise NotImplementedError
+    result = []
+    for num in range(1, n + 1):
+        if num % 3 == 0 and num % 5 == 0:
+            result.append("FizzBuzz")
+        elif num % 5 == 0:
+            result.append("Buzz")
+        elif num % 3 == 0:
+            result.append("Fizz")
+        else:
+            result.append(str(num))
+    return result
 
 
 # ---------- 作业 2：可变参数求平均 ----------
@@ -23,8 +32,10 @@ def average(*nums: float, precision: int = 2) -> float:
     average() -> 0.0
     提示：len(nums)、sum(nums)
     """
-    # TODO
-    raise NotImplementedError
+    if not nums:
+        return 0.0
+    result = sum(nums) / len(nums)
+    return round(result, precision)
 
 
 # ---------- 作业 3：keyword-only 参数 ----------
@@ -34,8 +45,7 @@ def greet(name: str, greeting: str = "你好", *, punctuation: str = "！") -> s
     greet("kaimin", punctuation=".") -> "你好，kaimin."
     注意签名里的 *：punctuation 只能用关键字传，greet("a", "b", "c") 会直接报 TypeError。
     """
-    # TODO
-    raise NotImplementedError
+    return f"{greeting}，{name}{punctuation}"
 
 
 # ---------- 作业 4：找第一个负数 ----------
@@ -45,8 +55,10 @@ def first_negative(nums: list[int]) -> int | None:
     first_negative([1, 2]) -> None
     要求：用 for 循环 + return 提前返回（或者试试 for...else）。
     """
-    # TODO
-    raise NotImplementedError
+    for n in nums:
+        if n < 0:
+            return n
+    return None
 
 
 # ---------- 作业 5：高阶函数 ----------
@@ -56,8 +68,10 @@ def apply_n_times(fn, x, n: int):
     apply_n_times(str.upper, "a", 1) -> "A"
     apply_n_times(lambda v: v + 1, 0, 0) -> 0
     """
-    # TODO
-    raise NotImplementedError
+    result = x
+    for _i in range(n):
+        result = fn(result)
+    return result
 
 
 # ---------- 作业 6（思考题，写注释回答即可）----------
@@ -69,9 +83,10 @@ def apply_n_times(fn, x, n: int):
 #   print(add_item("a"))
 #   print(add_item("b"))
 #
-# 你的猜测：
-# 实际结果：
-# 为什么（用一句话解释）：
+# 你的猜测：["a"] ["a", "b"]
+# 实际结果：["a"] ["a", "b"]
+# 为什么（用一句话解释）：因为items=[]相当于是在函数add_item上声明了个局部list，每次调用add_item，
+# append并且返回的都是同一个list
 #
 
 

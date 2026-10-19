@@ -13,7 +13,7 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["lesson01", "lesson02"]
+testpaths = ["lesson01", "lesson02", "lesson03", "lesson04", "lesson05"]
 
 [tool.ruff]
 line-length = 100
