@@ -7,9 +7,13 @@
 3. __all__ 只列出上面 4 个函数和 describe，不要暴露 _format 里的东西。
 """
 
-# TODO: 相对导入
+from ._format import fmt
+from .circle import area as circle_area
+from .circle import perimeter as circle_perimeter
+from .rect import area as rect_area
+from .rect import perimeter as rect_perimeter
 
-__all__: list[str] = []  # TODO
+__all__: list[str] = ["circle_area", "circle_perimeter", "rect_area", "rect_perimeter", "describe"]
 
 
 def describe(kind: str, **dims: float) -> str:
@@ -18,4 +22,9 @@ def describe(kind: str, **dims: float) -> str:
     kind 不认识 -> ValueError(f"unknown shape: {kind!r}")
     数字用 ._format.fmt 格式化（保留 2 位小数）。
     """
-    raise NotImplementedError  # TODO
+    if kind == "circle":
+        return f"circle: area={fmt(circle_area(**dims))}, perimeter={fmt(circle_perimeter(**dims))}"
+    elif kind == "rect":
+        return f"rect: area={fmt(rect_area(**dims))}, perimeter={fmt(rect_perimeter(**dims))}"
+    else:
+        raise ValueError(f"unknown shape: {kind!r}")

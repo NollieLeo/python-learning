@@ -1,11 +1,11 @@
 """圆。用标准库 math 的 pi。"""
 
-# TODO: import
+from math import pi
 
 
 def area(r: float) -> float:
-    raise NotImplementedError  # TODO
+    return pi * (r**2)
 
 
 def perimeter(r: float) -> float:
-    raise NotImplementedError  # TODO
+    return 2 * pi * r

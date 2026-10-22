@@ -8,12 +8,15 @@ dependencies = []
 
 [dependency-groups]
 dev = [
+    "pyright>=1.1.414",
     "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
     "ruff>=0.17.0",
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["lesson01", "lesson02", "lesson03", "lesson04", "lesson05"]
+testpaths = ["lesson01", "lesson02", "lesson03", "lesson04", "lesson05", "lesson06", "lesson07"]
+markers = ["slow: 会调用外部工具（如 pyright），较慢"]
 
 [tool.ruff]
 line-length = 100
@@ -22,3 +25,8 @@ target-version = "py314"
 [tool.ruff.lint]
 # E/F 基础错误，I 是 import 排序（替代 isort），UP 自动升级到新语法，B 常见 bug
 select = ["E", "F", "I", "UP", "B"]
+
+[tool.pyright]
+pythonVersion = "3.14"
+typeCheckingMode = "standard"
+reportMissingImports = true

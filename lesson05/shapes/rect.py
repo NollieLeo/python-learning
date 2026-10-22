@@ -2,8 +2,8 @@
 
 
 def area(w: float, h: float) -> float:
-    raise NotImplementedError  # TODO
+    return w * h
 
 
 def perimeter(w: float, h: float) -> float:
-    raise NotImplementedError  # TODO
+    return 2 * (w + h)

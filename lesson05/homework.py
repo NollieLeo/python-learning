@@ -21,10 +21,18 @@
 """
 
 # 思考题回答：
-# 1.
-# 2.
-# 3.
+# 1. 只打印了一次“loading shapes”。因为这个指令是基于整个项目跑的，shapes是一个模块，加载过一次之后
+# 就会缓存起来
+# 2. 直接运行“uv run python lesson05/shapes/circle.py”没有打印信息,
+# 改为“uv run python -m lesson05.shapes.circle” 会打印“loading shapes
+# <frozen runpy>:130: RuntimeWarning: 'lesson05.shapes.circle' found in sys.modules after import of
+# package 'lesson05.shapes', but prior to execution of 'lesson05.shapes.circle'; this may result in
+# unpredictable behaviour
+# ”
+# 前者是独立文件的py执行，后者是按照模块执行，模块执行会先跑模块中的__init__.py
+# 3. _format.py 属于模块内私有文件，不给外部使用。Python 不阻止任何 import
 
 QUESTIONS = """
+lesson05/shapes/__init__.py        12      0   100%
 （在这里写你学习过程中的疑问，以及作业 6 的覆盖率输出）
 """

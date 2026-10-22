@@ -11,7 +11,7 @@
 
 import sys  # noqa: F401 —— __main__ 入口要用 sys.argv，写完入口后把这个 noqa 删掉
 
-# TODO: import describe
+from lesson05.shapes import describe
 
 USAGE = "usage: python -m lesson05.cli circle <r> | rect <w> <h>"
 
@@ -22,7 +22,22 @@ def main(argv: list[str]) -> int:
     main([]) / main(["triangle", "1"]) / main(["circle"]) 打印 USAGE，返回 2
     提示：float(x) 转数字；参数个数不对也算用法错误。
     """
-    raise NotImplementedError  # TODO
+    if not argv:
+        print(USAGE)
+        return 2
+    kind, *values = argv
+    value_l = len(values)
+    if kind == "circle" and value_l == 1:
+        print(describe(kind=kind, r=float(values[0])))
+        return 0
+    elif kind == "rect" and value_l == 2:
+        print(describe(kind=kind, w=float(values[0]), h=float(values[1])))
+        return 0
+    else:
+        print(USAGE)
+        return 2
 
 
 # TODO: __main__ 入口
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))

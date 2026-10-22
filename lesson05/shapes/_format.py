@@ -3,4 +3,4 @@
 
 def fmt(n: float) -> str:
     """fmt(3.14159) -> "3.14"；fmt(6) -> "6.00"。提示：f"{n:.2f}"。"""
-    raise NotImplementedError  # TODO
+    return f"{n:.2f}"
