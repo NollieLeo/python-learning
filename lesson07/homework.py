@@ -12,12 +12,17 @@ from typing import Literal, NotRequired, Protocol, TypedDict, runtime_checkable
 # ---------- 作业 1：Optional 与收窄 ----------
 def safe_div(a: float, b: float) -> float | None:
     """b 为 0 返回 None，否则返回 a / b。"""
-    raise NotImplementedError  # TODO
+    if not b:
+        return None
+    return a / b
 
 
 def div_or_zero(a: float, b: float) -> float:
     """调用 safe_div，结果是 None 就返回 0.0。要求：不能用 Any / cast，靠收窄让 pyright 通过。"""
-    raise NotImplementedError  # TODO
+    result = safe_div(a, b)
+    if result is None:
+        return 0.0
+    return result
 
 
 # ---------- 作业 2：泛型函数（3.12+ 语法） ----------
@@ -27,14 +32,16 @@ def last[T](items: Sequence[T]) -> T | None:  # noqa: UP047 —— 这里故意�
     last("abc") -> "c"          str 也是 Sequence[str]
     last([]) -> None
     """
-    raise NotImplementedError  # TODO
+    if not items:
+        return None
+    return items[-1]
 
 
 def pairwise[T](items: Sequence[T]) -> list[tuple[T, T]]:  # noqa: UP047
     """相邻两两配对：pairwise([1, 2, 3]) -> [(1, 2), (2, 3)]；少于 2 个返回 []。
     提示：zip(items, items[1:])。
     """
-    raise NotImplementedError  # TODO
+    return [*zip(items, items[1:], strict=False)]
 
 
 # ---------- 作业 3：TypedDict ----------
@@ -49,7 +56,11 @@ def describe_movie(m: Movie) -> str:
     有 rating -> "Dune (2021) ★8.1"（rating 保留 1 位小数）
     提示：m.get("rating") 收窄后再用。
     """
-    raise NotImplementedError  # TODO
+    rating = m.get("rating")
+    result = f"{m['title']} ({m['year']})"
+    if rating is None:
+        return result
+    return f"{result} ★{rating:.1f}"
 
 
 # ---------- 作业 4：Literal ----------
@@ -58,7 +69,8 @@ type Order = Literal["asc", "desc"]
 
 def sort_movies(movies: list[Movie], order: Order = "asc") -> list[Movie]:
     """按 year 排序，返回新列表，order 决定升降。"""
-    raise NotImplementedError  # TODO
+    is_desc = order == "desc"
+    return sorted(movies, key=lambda m: m.get("year"), reverse=is_desc)
 
 
 # ---------- 作业 5：Callable ----------
@@ -66,7 +78,7 @@ def compose(f: Callable[[int], int], g: Callable[[int], int]) -> Callable[[int],
     """返回一个新函数 h，h(x) == g(f(x))。
     compose(lambda x: x + 1, lambda x: x * 2)(3) -> 8
     """
-    raise NotImplementedError  # TODO
+    return lambda x: g(f(x))
 
 
 # ---------- 作业 6：Protocol + runtime_checkable ----------
@@ -89,7 +101,7 @@ def names_of(items: Iterable[object]) -> list[str]:
     names_of([Dog("rex"), Rock(), Dog("ace")]) -> ["rex", "ace"]
     提示：isinstance(item, Named)，收窄后 item.name 才能通过 pyright。
     """
-    raise NotImplementedError  # TODO
+    return [item.name for item in items if isinstance(item, Named)]
 
 
 # ---------- 作业 7：递归类型别名 ----------
@@ -101,7 +113,15 @@ def max_depth(data: Json) -> int:
     max_depth(1) -> 0;  max_depth([]) -> 1;  max_depth([1, [2]]) -> 2
     max_depth({"a": {"b": [1]}}) -> 3
     """
-    raise NotImplementedError  # TODO
+    if isinstance(data, dict):
+        if not data:
+            return 1
+        return 1 + max(max_depth(item) for item in data.values())
+    elif isinstance(data, list):
+        if not data:
+            return 1
+        return 1 + max(max_depth(item) for item in data)
+    return 0
 
 
 # ---------- 作业 8：修类型（下面的函数逻辑是对的，注解是错的，pyright 会报错） ----------
@@ -109,16 +129,20 @@ def max_depth(data: Json) -> int:
 # 每处改完在旁边注释一句原因。
 
 
-def mean(xs: list[int]) -> int:  # TODO: 返回类型错了
+def mean(
+    xs: list[int],
+) -> float:  # 原因：/ 永远产生 float（Lesson 01），int 列表的平均数也可能是 2.5
     return sum(xs) / len(xs)
 
 
-def shout(text: str | None) -> str:  # TODO: 这个不能改签名，要改函数体让 None 被处理
-    return text.upper() + "!"
+def shout(text: str | None) -> str:  # 原因：签名允许 None，函数体就必须处理 None，这里用三元收窄
+    return (text.upper() if text else "") + "!"
 
 
-def head(xs: list) -> str:  # TODO: list 缺元素类型，返回类型也不对
-    return xs[0]
+def head[T](xs: Sequence[T]) -> T:  # 原因：元素是什么类型就返回什么类型，用泛型而不是写死 str；
+    return xs[
+        0
+    ]  # 返回值不可能是 None（空序列抛 IndexError），所以不标 | None；参数只读且需下标，用 Sequence
 
 
 # ---------- 作业 9（思考题，写注释回答即可）----------
@@ -130,9 +154,12 @@ def head(xs: list) -> str:  # TODO: list 缺元素类型，返回类型也不对
 # 3. Protocol 和 Lesson 06 的 ABC 在「isinstance」这件事上的区别是什么？
 #
 # 回答：
-# 1.
-# 2.
-# 3.
+# 1. 参数只是 for 遍历用 Iterable，谁都能传；需要下标、len、切片用 Sequence；要往里 append 或明确要
+#  list 的方法才用 list。返回值反过来，标具体的 list
+# 2. TypedDict 的运行时对象就是普通 dict，type(m) 是 dict，不是「没有」。
+#    dataclass 的运行时对象是那个类的实例，能点访问、能挂方法
+# 3. ABC 的 isinstance 查继承关系，天生可用；Protocol 的 isinstance 要加 @runtime_checkable 才能用
+# ，查的是有没有那些名字
 
 
 QUESTIONS = """
